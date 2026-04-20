@@ -66,7 +66,7 @@ router.get('/my-courses', protect, getMyCourses);
  *       200:
  *         description: List of students enrolled in this course
  */
-router.get('/admin/course/:courseId', protect, adminOnly, async (req, res) => {
+router.get('/admin/course/:courseId', protect, async (req, res) => {
   try {
     const enrollments = await Enrollment.find({ courseId: req.params.courseId })
       .populate('userId', 'name email')
@@ -76,10 +76,7 @@ router.get('/admin/course/:courseId', protect, adminOnly, async (req, res) => {
     res.json(enrollments);
   } catch (err) {
     console.error('Admin enrollments error:', err);
-    res.status(500).json({ 
-      message: 'Failed to load enrollments for this course',
-      error: err.message 
-    });
+    res.status(500).json({ message: 'Failed to load enrollments for this course' });
   }
 });
 
