@@ -19,7 +19,7 @@ app.use(cors());
 app.use(helmet());
 app.use(morgan('dev'));
 
-// Swagger Configuration with proper security
+// Swagger Configuration
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
@@ -28,7 +28,11 @@ const swaggerOptions = {
       version: '1.0.0',
       description: 'Learning Management System API - Full 13 Operations',
     },
-    servers: [{ url: 'http://localhost:5000' }],
+    servers: [
+      {
+        url: process.env.BASE_URL || 'http://localhost:5000' // ✅ FIXED
+      }
+    ],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -53,9 +57,10 @@ app.use('/api/enrollments', enrollmentRoutes);
 const startServer = async () => {
   await connectDB();
   const PORT = process.env.PORT || 5000;
+
   app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📄 Swagger UI: http://localhost:5000/api-docs`);
+    console.log(`🚀 Server running on port ${PORT}`); // ✅ cleaner
+    console.log(`📄 Swagger UI available at /api-docs`); // ✅ cleaner
   });
 };
 
