@@ -66,7 +66,8 @@ router.get('/my-courses', protect, getMyCourses);
  *       200:
  *         description: List of students enrolled in this course
  */
-router.get('/admin/course/:courseId', protect, async (req, res) => {
+// ==================== ADMIN ENROLLMENTS ROUTE (With adminOnly) ====================
+router.get('/admin/course/:courseId', protect, adminOnly, async (req, res) => {
   try {
     const enrollments = await Enrollment.find({ courseId: req.params.courseId })
       .populate('userId', 'name email')
