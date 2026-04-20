@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api/axios'; // ✅ FIXED
 import { useAuth } from '../context/AuthContext';
 
 const Courses = () => {
@@ -12,7 +12,7 @@ const Courses = () => {
   const fetchCourses = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/courses', {
+      const res = await api.get('/courses', { // ✅ FIXED
         params: { search, category }
       });
       setCourses(res.data);
@@ -29,11 +29,8 @@ const Courses = () => {
 
   const handleEnroll = async (courseId) => {
     try {
-      await axios.post(`http://localhost:5000/api/enrollments/${courseId}`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await api.post(`/enrollments/${courseId}`); // ✅ FIXED
       alert('✅ Successfully enrolled in the course!');
-      // Optionally refresh courses or show success toast
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to enroll. You may already be enrolled.');
     }

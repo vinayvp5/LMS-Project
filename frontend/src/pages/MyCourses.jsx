@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import axios from 'axios';
+import api from '../api/axios'; // ✅ FIXED
 
 const MyCourses = () => {
   const [enrolledCourses, setEnrolledCourses] = useState([]);
@@ -9,9 +9,7 @@ const MyCourses = () => {
   useEffect(() => {
     const fetchMyCourses = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/enrollments/my-courses', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const res = await api.get('/enrollments/my-courses'); // ✅ FIXED
         setEnrolledCourses(res.data);
       } catch (err) {
         console.error(err);
@@ -46,7 +44,9 @@ const MyCourses = () => {
                   <div className="p-6">
                     <h3 className="text-xl font-semibold mb-2">{enrollment.courseId?.title}</h3>
                     <p className="text-gray-600 text-sm mb-6">{enrollment.courseId?.description}</p>
-                    <div className="text-xs text-green-600 font-medium">Enrolled on: {new Date(enrollment.enrolledAt).toLocaleDateString()}</div>
+                    <div className="text-xs text-green-600 font-medium">
+                      Enrolled on: {new Date(enrollment.enrolledAt).toLocaleDateString()}
+                    </div>
                   </div>
                 </div>
               ))}

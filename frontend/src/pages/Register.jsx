@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/axios'; // ✅ FIXED (use axios instance)
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -23,8 +23,8 @@ const Register = () => {
     setError('');
 
     try {
-      // Only student registration allowed now
-      await axios.post('http://localhost:5000/api/auth/signup', formData);
+      // ✅ FIXED (removed localhost)
+      await api.post('/auth/signup', formData);
 
       alert('Account created successfully! Please login.');
       navigate('/login');

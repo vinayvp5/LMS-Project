@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import api from '../api/axios'; // ✅ FIXED (use axios instance)
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -18,7 +18,8 @@ const Login = () => {
     setError('');
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
+      // ✅ FIXED (removed localhost)
+      const res = await api.post('/auth/login', {
         email,
         password,
       });
@@ -28,7 +29,7 @@ const Login = () => {
 
       alert('Login Successful!');
 
-      // ROLE-BASED REDIRECT (THIS IS THE FIX)
+      // ROLE-BASED REDIRECT
       if (res.data.user.role === 'admin') {
         navigate('/admin', { replace: true });
       } else {
