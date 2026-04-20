@@ -1,7 +1,7 @@
 const express = require('express');
 const { enrollCourse, getMyCourses } = require('../controllers/enrollmentController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
-const Enrollment = require('../models/Enrollment');
+const Enrollment = require('../models/Enrollment');   // Make sure this line exists
 
 const router = express.Router();
 
@@ -46,7 +46,7 @@ router.post('/:courseId', protect, enrollCourse);
  */
 router.get('/my-courses', protect, getMyCourses);
 
-// ==================== NEW ADMIN ROUTE (Only this is added) ====================
+// ==================== ADMIN ENROLLMENTS ROUTE (Only this was added) ====================
 
 /**
  * @swagger
@@ -75,8 +75,11 @@ router.get('/admin/course/:courseId', protect, adminOnly, async (req, res) => {
 
     res.json(enrollments);
   } catch (err) {
-    console.error('Enrollment admin error:', err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Admin enrollments error:', err);
+    res.status(500).json({ 
+      message: 'Failed to load enrollments for this course',
+      error: err.message 
+    });
   }
 });
 
