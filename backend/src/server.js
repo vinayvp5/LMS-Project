@@ -15,7 +15,16 @@ const enrollmentRoutes = require('./routes/enrollmentRoutes');
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+
+// ✅ FIXED CORS (VERY IMPORTANT for Vercel → Railway)
+app.use(cors({
+  origin: [
+    'http://localhost:5173', // local dev
+    'https://lms-project-gules.vercel.app' // your frontend live URL
+  ],
+  credentials: true
+}));
+
 app.use(helmet());
 app.use(morgan('dev'));
 
@@ -30,7 +39,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: process.env.BASE_URL || 'http://localhost:5000' // ✅ FIXED
+        url: process.env.BASE_URL || 'http://localhost:5000'
       }
     ],
     components: {
@@ -59,8 +68,8 @@ const startServer = async () => {
   const PORT = process.env.PORT || 5000;
 
   app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`); // ✅ cleaner
-    console.log(`📄 Swagger UI available at /api-docs`); // ✅ cleaner
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📄 Swagger UI available at /api-docs`);
   });
 };
 
