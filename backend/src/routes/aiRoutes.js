@@ -31,10 +31,13 @@ router.post('/generate-description', async (req, res) => {
   }
 
   if (!process.env.GROQ_API_KEY) {
-    return res.status(500).json({ message: 'AI service not configured' });
+    console.error('GROQ_API_KEY is missing in environment variables');
+    return res.status(500).json({ message: 'AI service not configured on server' });
   }
 
   try {
+    console.log('Calling Groq API for title:', title); // For debugging
+
     const groqResponse = await axios.post(
       'https://api.groq.com/openai/v1/chat/completions',
       {
@@ -66,9 +69,12 @@ router.post('/generate-description', async (req, res) => {
     res.json({ description });
 
   } catch (err) {
-    console.error('Groq API Error:', err.response?.data || err.message);
+    console.error('Groq API Error Details:', {
+      message: err.message,
+      response: err.response?.data
+    });
     res.status(500).json({ 
-      message: 'AI generation failed. Please check API key or try again later.' 
+      message: 'AI generation failed. Please check server logs.' 
     });
   }
 });
