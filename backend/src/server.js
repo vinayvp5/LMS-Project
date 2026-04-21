@@ -11,10 +11,11 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const enrollmentRoutes = require('./routes/enrollmentRoutes');
-
+app.use('/api/ai', require('./routes/aiRoutes'));
 const app = express();
 
 app.use(express.json());
+
 
 // ✅ FIXED CORS (VERY IMPORTANT for Vercel → Railway)
 app.use(cors({
