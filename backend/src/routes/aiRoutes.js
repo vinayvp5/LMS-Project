@@ -30,6 +30,10 @@ router.post('/generate-description', async (req, res) => {
     return res.status(400).json({ message: 'Course title is required' });
   }
 
+  if (!process.env.GROQ_API_KEY) {
+    return res.status(500).json({ message: 'AI service not configured' });
+  }
+
   try {
     const groqResponse = await axios.post(
       'https://api.groq.com/openai/v1/chat/completions',
@@ -38,11 +42,11 @@ router.post('/generate-description', async (req, res) => {
         messages: [
           {
             role: "system",
-            content: "You are a helpful assistant that generates engaging course descriptions for online learning platforms."
+            content: "You are a helpful assistant that generates engaging course descriptions."
           },
           {
             role: "user",
-            content: `Generate a concise, engaging course description (80-120 words) for the course titled: "${title}". Make it suitable for an online LMS.`
+            content: `Generate a concise, engaging course description (80-120 words) for the course titled: "${title}". Make it suitable for an online learning platform.`
           }
         ],
         temperature: 0.7,
@@ -62,8 +66,10 @@ router.post('/generate-description', async (req, res) => {
     res.json({ description });
 
   } catch (err) {
-    console.error('Groq API Error:', err.message);
-    res.status(500).json({ message: 'AI generation failed. Please try again later.' });
+    console.error('Groq API Error:', err.response?.data || err.message);
+    res.status(500).json({ 
+      message: 'AI generation failed. Please check API key or try again later.' 
+    });
   }
 });
 
