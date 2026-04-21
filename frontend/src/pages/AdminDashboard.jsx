@@ -9,11 +9,14 @@ const AdminDashboard = () => {
   const [editingCourse, setEditingCourse] = useState(null);
   const [formData, setFormData] = useState({ title: '', description: '', category: '' });
 
-  // Modal states
+  // Modal states for Enrollments
   const [showEnrollments, setShowEnrollments] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [enrollments, setEnrollments] = useState([]);
   const [enrollmentsLoading, setEnrollmentsLoading] = useState(false);
+
+  // AI Generation state
+  const [generating, setGenerating] = useState(false);
 
   const fetchCourses = async () => {
     try {
@@ -88,6 +91,28 @@ const AdminDashboard = () => {
     }
   };
 
+  // AI Generate Description
+  const handleGenerateDescription = async () => {
+    if (!formData.title.trim()) {
+      alert("Please enter a course title first");
+      return;
+    }
+
+    setGenerating(true);
+    try {
+      const res = await api.post('/ai/generate-description', { 
+        title: formData.title 
+      });
+      
+      setFormData(prev => ({ ...prev, description: res.data.description }));
+      alert('✅ AI Description generated successfully!');
+    } catch (err) {
+      alert('Failed to generate description. Please try again.');
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   if (loading) return <div className="text-center py-20">Loading admin dashboard...</div>;
 
   return (
@@ -112,7 +137,7 @@ const AdminDashboard = () => {
             </button>
           </div>
 
-          {/* Create/Edit Form */}
+          {/* Create/Edit Form with AI Button */}
           {showForm && (
             <div className="bg-white rounded-3xl shadow-xl p-8 mb-12">
               <h2 className="text-2xl font-semibold mb-6">
@@ -121,14 +146,26 @@ const AdminDashboard = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Course Title</label>
-                  <input 
-                    type="text" 
-                    value={formData.title} 
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })} 
-                    className="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                    required 
-                  />
+                  <div className="flex gap-3">
+                    <input 
+                      type="text" 
+                      value={formData.title} 
+                      onChange={(e) => setFormData({ ...formData, title: e.target.value })} 
+                      className="flex-1 px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                      placeholder="Course Title"
+                      required 
+                    />
+                    <button 
+                      type="button"
+                      onClick={handleGenerateDescription}
+                      disabled={!formData.title.trim() || generating}
+                      className="px-6 py-4 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white font-medium rounded-2xl transition whitespace-nowrap"
+                    >
+                      {generating ? 'Generating...' : '✨ Generate Description'}
+                    </button>
+                  </div>
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                   <input 
@@ -140,16 +177,19 @@ const AdminDashboard = () => {
                     required 
                   />
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                   <textarea 
                     value={formData.description} 
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
-                    rows="4" 
+                    rows="5" 
                     className="w-full px-5 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                    placeholder="AI generated description will appear here..."
                     required 
                   />
                 </div>
+
                 <button 
                   type="submit" 
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 rounded-2xl transition"
